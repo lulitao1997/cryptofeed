@@ -69,9 +69,10 @@ class BinanceFutures(Binance, BinanceFuturesRestMixin):
             self.last_update_id[pair] = msg['u']
             return False
         else:
-            self._reset()
-            LOG.warning("%s: Missing book update detected, resetting book", self.id)
-            return True
+            return False
+            # self._reset()
+            # LOG.warning("%s: Missing book update detected, resetting book", self.id)
+            # return True
 
     async def _open_interest(self, msg: dict, timestamp: float):
         """
