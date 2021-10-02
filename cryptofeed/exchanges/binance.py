@@ -278,23 +278,24 @@ class Binance(Feed, BinanceRestMixin):
             return True
 
     async def _snapshot(self, pair: str) -> None:
-        max_depth = self.max_depth if self.max_depth else self.valid_depths[-1]
-        if max_depth not in self.valid_depths:
-            for d in self.valid_depths:
-                if d > max_depth:
-                    max_depth = d
-                    break
+        pass
+        # max_depth = self.max_depth if self.max_depth else self.valid_depths[-1]
+        # if max_depth not in self.valid_depths:
+        #     for d in self.valid_depths:
+        #         if d > max_depth:
+        #             max_depth = d
+        #             break
 
-        url = f'{self.rest_endpoint}/depth?symbol={pair}&limit={max_depth}'
-        resp = await self.http_conn.read(url)
-        await sleep(1 / self.request_limit)
-        resp = json.loads(resp, parse_float=Decimal)
+        # url = f'{self.rest_endpoint}/depth?symbol={pair}&limit={max_depth}'
+        # resp = await self.http_conn.read(url)
+        # await sleep(1 / self.request_limit)
+        # resp = json.loads(resp, parse_float=Decimal)
 
-        std_pair = self.exchange_symbol_to_std_symbol(pair)
-        self.last_update_id[std_pair] = resp['lastUpdateId']
-        self._l2_book[std_pair] = OrderBook(self.id, std_pair, max_depth=self.max_depth, bids={Decimal(u[0]): Decimal(u[1]) for u in resp['bids']}, asks={Decimal(u[0]): Decimal(u[1]) for u in resp['asks']})
-        ts = self.timestamp_normalize(resp['E']) if 'E' in resp else None
-        await self.book_callback(L2_BOOK, self._l2_book[std_pair], time.time(), raw=resp, timestamp=ts, sequence_number=resp['lastUpdateId'])
+        # std_pair = self.exchange_symbol_to_std_symbol(pair)
+        # self.last_update_id[std_pair] = resp['lastUpdateId']
+        # self._l2_book[std_pair] = OrderBook(self.id, std_pair, max_depth=self.max_depth, bids={Decimal(u[0]): Decimal(u[1]) for u in resp['bids']}, asks={Decimal(u[0]): Decimal(u[1]) for u in resp['asks']})
+        # ts = self.timestamp_normalize(resp['E']) if 'E' in resp else None
+        # await self.book_callback(L2_BOOK, self._l2_book[std_pair], time.time(), raw=resp, timestamp=ts, sequence_number=resp['lastUpdateId'])
 
     async def _handle_book_msg(self, msg: dict, pair: str, timestamp: float):
         """
